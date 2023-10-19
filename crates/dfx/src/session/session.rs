@@ -679,6 +679,7 @@ where App: Application + Clone + 'static,
         let fix42_or_above = self.session_id.begin_string() == BeginString::FIXT11 || self.session_id.begin_string() >= BeginString::FIX42;
         let precision = if fix42_or_above {
             self.time_stamp_precision.as_datetime_format()
+            
         } else {
             DateTimeFormat::Seconds.as_datetime_format()
         };

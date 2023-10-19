@@ -1657,4 +1657,6 @@ mod intern {
     pub const RelationshipRiskEncodedSecurityDesc: Tag = 1619;
     pub const RiskEncodedSecurityDescLen: Tag = 1620;
     pub const RiskEncodedSecurityDesc: Tag = 1621;
+
+    pub const FIELD_CANCELORDERSONDISCONNECT: Tag = 8013;
 }
