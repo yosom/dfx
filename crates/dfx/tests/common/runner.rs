@@ -318,14 +318,12 @@ fn do_send(message: String, s: &mut TcpStream) {
         message.replacen(r"|", format!("|9={}|", len).as_str(), 1)
     };
     let message = message.replace("|", "\x01");
-    // println!("Runner: {}", message.replace("\x01", "|"));
     let checksum = do_checksum(&message);
     let message = if message.contains("\x0110=") {
         message.replace(r"10=0", format!("10={:03}", checksum).as_str())
     } else {
         format!("{message}10={checksum:03}\x01")
     };
-    // println!("Runner: {}", message.replace("\x01", "|"));
     s.write_all(message.as_bytes()).expect("Sent message");
     s.flush().unwrap();
 }
