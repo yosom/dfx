@@ -218,8 +218,6 @@ impl Message {
             }
         }
         let tag = if neg { -tag } else { tag };
-        eprintln!("tag: {tag}");
-
         *pos = tagend + 1;
 
         let fieldend = if let Some(value) = size_hint {

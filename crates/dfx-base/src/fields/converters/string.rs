@@ -23,6 +23,7 @@ impl<'a> TryFrom<&'a FieldValue> for &'a str {
 
     fn try_from(value: &'a FieldValue) -> Result<Self, Self::Error> {
         // TODO encoding latin1
+        // 显示value的值
         std::str::from_utf8(value).map_err(|_| ConversionError::EncodingError)
     }
 }

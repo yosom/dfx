@@ -56,12 +56,14 @@ impl std::convert::TryFrom<String> for DateTimeFormat {
             "Microseconds" => Ok(Self::Microseconds),
             "Milliseconds" => Ok(Self::Milliseconds),
             "Seconds" => Ok(Self::Seconds),
-            _ => Err("Valid format is ... TODO")
+            _ => Err("Valid format is ... TODO"),
         }
     }
 }
 
-use chrono::{DateTime as ChronoDateTime, TimeZone, Utc, NaiveDateTime, NaiveDate, NaiveTime, Local};
+use chrono::{
+    DateTime as ChronoDateTime, Local, NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc,
+};
 
 use crate::field_map::FieldValue;
 use crate::fields::converters::TryFrom;
@@ -74,13 +76,26 @@ impl<'a> TryFrom<&'a FieldValue> for ChronoDateTime<Utc> {
 
     fn try_from(value: &'a FieldValue) -> Result<Self, Self::Error> {
         let time: &str = TryFrom::try_from(value)?;
-        match Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITHOUT_MILLISECONDS) {
+
+        // 自动识别时间格式
+        match Utc
+            .datetime_from_str(time, DATE_TIME_FORMAT_WITH_NANOSECONDS)
+            .or_else(|_| Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITH_MICROSECONDS))
+            .or_else(|_| Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITH_MILLISECONDS))
+            .or_else(|_| Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITHOUT_MILLISECONDS))
+            .map_err(|_| ConversionError::EncodingError)
+        {
             Ok(t) => Ok(t),
-            Err(e) => match Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITH_MILLISECONDS) {
-                Ok(t) => Ok(t),
-                Err(_) => todo!(),
-            },
+            Err(e) => todo!(),
         }
+
+        // match Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITHOUT_MILLISECONDS) {
+        //     Ok(t) => Ok(t),
+        //     Err(e) => match Utc.datetime_from_str(time, DATE_TIME_FORMAT_WITH_MILLISECONDS) {
+        //         Ok(t) => Ok(t),
+        //         Err(_) => todo!(),
+        //     },
+        // }
     }
 }
 
